@@ -2,10 +2,17 @@
 	//PART 1: dapat URL -- akses page source
 	
 	// URL yang ingin Anda baca
-	$url = "https://www.azlyrics.com/";
+	$url = "https://pergikuliner.com/restaurants/surabaya/onni-house-wonokromo/";
 
 	// Mendapatkan konten dari URL
-	$html = file_get_contents($url);   //ini mendapatkan seluruh page HTML
+	$opts = [
+		'http' => [
+			'header' => "User-Agent:MyAgent/1.0\r\n"
+		]
+	];
+
+	$context = stream_context_create($opts);
+	$html = file_get_contents($url, false, $context); //ini mendapatkan seluruh page HTML
 
 	//---------------------------------------
 

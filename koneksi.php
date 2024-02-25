@@ -1,9 +1,9 @@
 <?php
 	// Konfigurasi database
 	$host = 'localhost';
-	$dbname = 'crawler';
+	$dbname = 'db_pergi_kuliner';
 	$username = 'root';
-	$password = '';
+	$password = 'admin123';
 
 	try {
 		// Membuat koneksi ke database menggunakan PDO

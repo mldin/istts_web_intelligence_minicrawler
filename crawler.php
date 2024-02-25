@@ -3,19 +3,21 @@
 	require 'Queue.php';
 	require 'misc.php';
 	
-	$S0 = "https://www.azlyrics.com/a.html/";
+	$S0 = "https://pergikuliner.com/restaurants/surabaya/onni-house-wonokromo/";
 	
 	$Q = new Queue();
 	$Q->enqueue($S0);
 	
-	while (!$Q->isEmpty()) {
+	$counter = 0;
+	// while (!$Q->isEmpty()) {
+	while (!$Q->isEmpty() && $counter < 1000) {
 		$u = $Q->dequeue();   //dapatkan sebuah URL dari Q
 		$du = fetch($u);      //ambil teks HTML-nya
 		
 		if (trim($du)!=""){   //kalau dokumen HTML tersebut tidak kosong
 			storeD($du, $u);  //simpan ke dalam D
 		
-			$L = array();
+			$L = [];
 			$L = extractURL($u, $du);  //ekstrak semua href "bersih" dari d(u)
 			
 			foreach ($L as $v) {
@@ -24,6 +26,8 @@
 				if (!$Q->contains($v) && !containsD($v)) {
 					$Q->enqueue($v);
 				}
-			}	
+			}
+			
+			$counter++;
 		}		
 	}

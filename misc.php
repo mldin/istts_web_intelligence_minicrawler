@@ -2,7 +2,14 @@
 		
 	function fetch($url){
 		// Mendapatkan konten dari URL
-		$html = file_get_contents($url);
+		$opts = [
+			'http' => [
+				'header' => "User-Agent:MyAgent/1.0\r\n"
+			]
+		];
+
+		$context = stream_context_create($opts);
+		$html = file_get_contents($url, false, $context);
 
 		return $html;	
 	}
