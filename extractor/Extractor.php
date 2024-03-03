@@ -35,17 +35,55 @@ EOT;
 
 	private function save($data)
 	{
-// 		foreach ($data as $key => $value) {
-// 			$sql = <<<EOT
-// SELECT *
-// FROM tableD as o
-// WHERE o.u NOT IN (
-//     SELECT url
-//     FROM restaurant as r
-// )
-// LIMIT 3;
-// EOT;
-// 		}
+		foreach ($data as $key => $value) {
+			// var_dump($value['url'], $value['name']);
+
+			$sql = <<<EOT
+INSERT INTO restaurant (
+	url,
+	name,
+	category,
+	price_min,
+	price_max,
+	address,
+	open_day_from,
+	open_day_to,
+	open_time_from,
+	open_time_to,
+	phone,
+	rating_overall,
+	rating_flavor,
+	rating_atmosphere,
+	rating_relevant,
+	rating_service,
+	rating_cleanliness
+)
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);
+EOT;
+
+			$stmt = $this->db->prepare($sql);
+			$stmt->bind_param('sssssssssssssssss',
+				$value['url'],
+				$value['name'],
+				$value['category'],
+				$value['price_min'],
+				$value['price_max'],
+				$value['address'],
+				$value['open_day_from'],
+				$value['open_day_to'],
+				$value['open_time_from'],
+				$value['open_time_to'],
+				$value['phone'],
+				$value['rating_overall'],
+				$value['rating_flavor'],
+				$value['rating_atmosphere'],
+				$value['rating_relevant'],
+				$value['rating_service'],
+				$value['rating_cleanliness']
+			);
+
+			$stmt->execute();
+		}
 	}
 
 	// extract data from DOM to array
@@ -53,7 +91,25 @@ EOT;
 	{
 		$result = [];
 		foreach ($data as $key => $value) {
-			$data = [];
+			$data = [
+				'url' => null,
+				'name' => null,
+				'category' => null,
+				'price_min' => 0,
+				'price_max' => 0,
+				'address' => null,
+				'open_day_from' => null,
+				'open_day_to' => null,
+				'open_time_from' => null,
+				'open_time_to' => null,
+				'phone' => null,
+				'rating_overall' => 0,
+				'rating_flavor' => 0,
+				'rating_atmosphere' => 0,
+				'rating_relevant' => 0,
+				'rating_service' => 0,
+				'rating_cleanliness' => 0
+			];
 
 			// set internal error
 			libxml_use_internal_errors(true);
@@ -83,17 +139,17 @@ EOT;
 				$sPrice = $ePrice[0]->nodeValue;
 				// if contains <
 				if (str_contains($sPrice, 'Di bawah'))
-					$data['price_max'] = preg_replace('/[^0-9]+/', '', $tPrice);
+					$data['price_max'] = preg_replace('/[^0-9]+/', '', $sPrice);
 
 				// if contains 'Di atas'
 				if (str_contains($sPrice, 'Di atas'))
-					$data['price_min'] = preg_replace('/[^0-9]+/', '', $tPrice);
+					$data['price_min'] = preg_replace('/[^0-9]+/', '', $sPrice);
 
 				// if price in range get min - max
-				$tPrice = explode("-", $sPrice);
-				if (count($tPrice) > 1) {
-					$data['price_min'] = preg_replace('/[^0-9]+/', '', $tPrice[0]);
-					$data['price_max'] = preg_replace('/[^0-9]+/', '', $tPrice[1]);
+				$sPrice = explode("-", $sPrice);
+				if (count($sPrice) > 1) {
+					$data['price_min'] = preg_replace('/[^0-9]+/', '', $sPrice[0]);
+					$data['price_max'] = preg_replace('/[^0-9]+/', '', $sPrice[1]);
 				}
 			}
 
@@ -154,6 +210,16 @@ EOT;
 		return $result;
 	}
 
+	private function filter($data)
+	{
+		$filtered = array_filter($data, function($x) {
+			if (!empty($x['name']))
+				return $x;
+		});
+
+		return $filtered;
+	}
+
     public function run()
 	{
 		// get data
@@ -162,7 +228,9 @@ EOT;
 		// convert data from DOM to array
 		$result = $this->extract($data);
 
-		print_r($result); die;
+		// var_dump($result); die;
+
+		$result = $this->filter($result);
 
 		// save data to database
 		$this->save($result);
