@@ -66,7 +66,7 @@
 		require "koneksi.php";
 		
 		// Menyiapkan query SQL untuk menyimpan data
-		$sql = "INSERT INTO tableD (du, u) VALUES (:du, :u)";
+		$sql = "INSERT INTO tabled (du, u) VALUES (:du, :u)";
 		$stmt = $pdo->prepare($sql);
 		
 		// Mengeksekusi query dengan mengganti parameter bind dengan nilai yang sesuai
@@ -74,7 +74,7 @@
 		$stmt->bindParam(':u', $data2);
 		$stmt->execute();
 		
-		// echo "1 data tableD ditambahkan<br>";
+		// echo "1 data tabled ditambahkan<br>";
 		
 		// Menutup koneksi database
 		$pdo = null;
@@ -83,7 +83,7 @@
 	function storeE($data1, $data2){
 		require "koneksi.php";
 		
-		$sql = "SELECT COUNT(*) FROM tableE WHERE u = :data1 and v = :data2";
+		$sql = "SELECT COUNT(*) FROM tablee WHERE u = :data1 and v = :data2";
 		$stmt = $pdo->prepare($sql);
 		$stmt->bindParam(':data1', $data1);
 		$stmt->bindParam(':data2', $data2);
@@ -95,7 +95,7 @@
 		// Memeriksa apakah data ditemukan atau tidak
 		if ($result <= 0) {
 			// Menyiapkan query SQL untuk menyimpan data
-			$sql = "INSERT INTO tableE (u, v) VALUES (:u, :v)";
+			$sql = "INSERT INTO tablee (u, v) VALUES (:u, :v)";
 			$stmt = $pdo->prepare($sql);
 			
 			// Mengeksekusi query dengan mengganti parameter bind dengan nilai yang sesuai
@@ -103,7 +103,7 @@
 			$stmt->bindParam(':v', $data2);
 			$stmt->execute();
 			
-			// echo "1 data tableE ditambahkan<br>";
+			// echo "1 data tablee ditambahkan<br>";
 		}						
 		
 		// Menutup koneksi database
@@ -114,7 +114,7 @@
 		
 		require "koneksi.php";
 		
-		$sql = "SELECT COUNT(*) FROM tableD WHERE u = :v";
+		$sql = "SELECT COUNT(*) FROM tabled WHERE u = :v";
 		$stmt = $pdo->prepare($sql);
 		$stmt->bindParam(':v', $v);
 		$stmt->execute();
