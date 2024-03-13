@@ -1,9 +1,4 @@
 <?php
-
-	// const prefix = [
-	// 	'restoran',
-	// 	'restaurants'
-	// ];
 		
 	function fetch($url){
 		// Mendapatkan konten dari URL
@@ -79,7 +74,7 @@
 		$stmt->bindParam(':u', $data2);
 		$stmt->execute();
 		
-		echo "1 data tableD ditambahkan<br>";
+		// echo "1 data tableD ditambahkan<br>";
 		
 		// Menutup koneksi database
 		$pdo = null;
@@ -108,7 +103,7 @@
 			$stmt->bindParam(':v', $data2);
 			$stmt->execute();
 			
-			echo "1 data tableE ditambahkan<br>";
+			// echo "1 data tableE ditambahkan<br>";
 		}						
 		
 		// Menutup koneksi database
@@ -137,10 +132,5 @@
 			return false;
 		}				
 	}
-
-	// function getOnlyPrefix($url)
-	// {
-	// 	if ()
-	// }
 	
 ?>

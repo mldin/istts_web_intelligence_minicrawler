@@ -20,6 +20,7 @@ class Extractor
     private function get()
 	{
 		// return only not synced
+		// LIMIT 100 to prevent memory limit
         $sql = <<<EOT
 SELECT *
 FROM tableD as o
@@ -27,10 +28,37 @@ WHERE o.u NOT IN (
     SELECT url
     FROM restaurant as r
 )
+AND o.u LIKE ?
+AND o.u NOT LIKE ?
+AND o.u NOT LIKE ?
+AND o.u NOT LIKE ?
+AND o.u NOT LIKE ?
+AND o.u NOT LIKE ?
+AND o.u NOT LIKE ?
 LIMIT 100;
 EOT;
-		$stmt = $this->db->query($sql);
-		return $stmt->fetch_all(MYSQLI_ASSOC);
+		$include = "%restaurants%";
+		$exclude_1 = "%gallery%";
+		$exclude_2 = "%reviews%";
+		$exclude_3 = "%menus%";
+		$exclude_4 = "%claim%";
+		$exclude_5 = "%default_search%";
+		$exclude_6 = "%baru-buka%";
+
+		$stmt = $this->db->prepare($sql);
+		$stmt->bind_param('sssssss', $include,
+			$exclude_1,
+			$exclude_2,
+			$exclude_3,
+			$exclude_4,
+			$exclude_5,
+			$exclude_6
+		);
+		$stmt->execute();
+
+		$result = $stmt->get_result();
+
+		return $result->fetch_all(MYSQLI_ASSOC);
     }
 
 	private function save($data)
@@ -222,18 +250,24 @@ EOT;
 
     public function run()
 	{
-		// get data
-		$data = $this->get();
+		// loop until insert all data
+		while (1) {
+			// get data
+			$data = $this->get();
 
-		// convert data from DOM to array
-		$result = $this->extract($data);
+			if (empty($data))
+				break;
 
-		// var_dump($result); die;
+			// convert data from DOM to array
+			$result = $this->extract($data);
 
-		$result = $this->filter($result);
+			$result = $this->filter($result);
 
-		// save data to database
-		$this->save($result);
+			// save data to database
+			$this->save($result);
+		}
+
+		echo "Done";
     }
 }
 
