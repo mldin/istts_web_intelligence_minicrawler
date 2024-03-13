@@ -1,4 +1,9 @@
 <?php
+
+	// const prefix = [
+	// 	'restoran',
+	// 	'restaurants'
+	// ];
 		
 	function fetch($url){
 		// Mendapatkan konten dari URL
@@ -132,5 +137,10 @@
 			return false;
 		}				
 	}
+
+	// function getOnlyPrefix($url)
+	// {
+	// 	if ()
+	// }
 	
 ?>

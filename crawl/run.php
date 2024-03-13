@@ -3,14 +3,15 @@
 	require 'Queue.php';
 	require 'misc.php';
 	
-	$S0 = "https://pergikuliner.com/restaurants/surabaya/onni-house-wonokromo/";
+	// https://pergikuliner.com/restaurants/surabaya/onni-house-wonokromo/
+	$S0 = $_POST["url"];
 	
 	$Q = new Queue();
 	$Q->enqueue($S0);
 	
 	$counter = 0;
-	// while (!$Q->isEmpty()) {
-	while (!$Q->isEmpty() && $counter < 1000) {
+	while (!$Q->isEmpty()) {
+	// while (!$Q->isEmpty() && $counter < 1000) {
 		$u = $Q->dequeue();   //dapatkan sebuah URL dari Q
 		$du = fetch($u);      //ambil teks HTML-nya
 		
@@ -31,3 +32,5 @@
 			$counter++;
 		}		
 	}
+
+	echo "Selesai";
