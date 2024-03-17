@@ -324,8 +324,13 @@ EOT;
 			if (empty($ePayment[0]))
 				$ePayment = $xpath->query('//*[@id="content-detail"]/div[1]/div/div[1]/ul/li[2]');
 
-			if (!str_contains($ePayment[0]->nodeValue, 'Pembayaran'))
+			if (!str_contains($ePayment[0]->nodeValue, 'Pembayaran')) {
 				$ePayment = $xpath->query('//*[@id="content-detail"]/div[1]/div/div[1]/ul/li[4]');
+
+				if (empty($ePayment[0])) {
+					$ePayment = $xpath->query('//*[@id="content-detail"]/div[1]/div/div[1]/ul/li[2]');
+				}
+			}
 			
 			if ($ePayment->length > 0) {
 				if ($ePayment[0]->childNodes->item(2)) {
