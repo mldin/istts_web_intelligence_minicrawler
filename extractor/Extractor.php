@@ -549,7 +549,7 @@ EOT;
 
     public function run()
 	{
-		$this->db->begin_transaction();
+		// $this->db->begin_transaction();
 		// loop until insert all data
 		while (1) {
 			// get data
@@ -571,7 +571,7 @@ EOT;
 			$this->save($result);
 		}
 
-		$this->db->rollback();
+		// $this->db->rollback();
 		echo "Done";
     }
 }
