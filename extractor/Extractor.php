@@ -80,7 +80,7 @@ EOT;
 	private function save($data)
 	{
 		foreach ($data as $key => $value) {
-			echo '<pre>' , var_dump($value) , '</pre>';
+			// echo '<pre>' , var_dump($value) , '</pre>';
 
 			$sql = <<<EOT
 INSERT INTO restaurant (
@@ -320,6 +320,13 @@ EOT;
 
 			$data['payment'] = [];	
 			$ePayment = $xpath->query('//*[@id="content-detail"]/div[1]/div/div[1]/ul/li[3]');
+
+			if (empty($ePayment[0]))
+				$ePayment = $xpath->query('//*[@id="content-detail"]/div[1]/div/div[1]/ul/li[2]');
+
+			if (!str_contains($ePayment[0]->nodeValue, 'Pembayaran'))
+				$ePayment = $xpath->query('//*[@id="content-detail"]/div[1]/div/div[1]/ul/li[4]');
+			
 			if ($ePayment->length > 0) {
 				if ($ePayment[0]->childNodes->item(2)) {
 					$iPayment = explode(', ', $ePayment[0]->childNodes->item(2)->nodeValue);
@@ -393,35 +400,33 @@ EOT;
 
 								$review['rating'] = preg_replace('/[^0-9,.]+/', '', $rRating);
 
-								// if (!empty($boxReview->childNodes->item(5))) {
-									$xBReview = $boxReview->childNodes->item(5);
+								$xBReview = $boxReview->childNodes->item(5);
 
+								$xReview = $xBReview->childNodes->item(1);
+								if (empty($xReview)) {
+									$xBReview = $boxReview->childNodes->item(7);
 									$xReview = $xBReview->childNodes->item(1);
-									if (empty($xReview)) {
-										$xBReview = $boxReview->childNodes->item(7);
-										$xReview = $xBReview->childNodes->item(1);
-									}
+								}
 
-									if (!empty($xReview)) {
-										$tReview = $xReview->childNodes->item(1);
+								if (!empty($xReview)) {
+									$tReview = $xReview->childNodes->item(1);
 
-										$ctReview = $tReview->childNodes->item(0);
-										while (!empty($ctReview)) {
-											if ($ctReview instanceof DOMElement) {
-												if ($ctReview->tagName === 'br') {
-													$space = $dom->createTextNode(',');
+									$ctReview = $tReview->childNodes->item(0);
+									while (!empty($ctReview)) {
+										if ($ctReview instanceof DOMElement) {
+											if ($ctReview->tagName === 'br') {
+												$space = $dom->createTextNode(',');
 
-													$tReview->replaceChild($space, $ctReview);
-													$ctReview = $space;
-												}
+												$tReview->replaceChild($space, $ctReview);
+												$ctReview = $space;
 											}
-
-											$ctReview = $ctReview->nextSibling;
 										}
 
-										$review['review'] = ltrim(rtrim($tReview->nodeValue));
+										$ctReview = $ctReview->nextSibling;
 									}
-								// }
+
+									$review['review'] = ltrim(rtrim($tReview->nodeValue));
+								}
 
 								$boxDate = $boxReview->childNodes->item(7);
 
@@ -438,6 +443,18 @@ EOT;
 
 									if (!empty($bVisitDate)) {
 										$visitDate = $bVisitDate->childNodes->item(2);
+
+										if (empty($visitDate)) {
+											$bVisitDate = $boxDate->childNodes->item(3);
+											$visitDate = $bVisitDate->childNodes->item(2);
+										}
+
+										$tmpVisitDate = trim($visitDate->nodeValue);
+										if (empty($tmpVisitDate)) {
+											$visitDate = $boxReview->childNodes->item(11)
+												->childNodes->item(1)
+												->childNodes->item(2);
+										}
 
 										if (!empty($visitDate)) {
 											$monthMapping = [
@@ -472,6 +489,11 @@ EOT;
 									if (empty($pBox)) {
 										$boxDate = $boxReview->childNodes->item(9);
 										$pBox = $boxDate->childNodes->item(4);
+									}
+
+									if (empty($pBox)) {
+										$pBox = $boxReview->childNodes->item(11)
+											->childNodes->item(4);
 									}
 
 									$price = $pBox->nodeValue;
@@ -527,7 +549,7 @@ EOT;
 
     public function run()
 	{
-		// $this->db->begin_transaction();
+		$this->db->begin_transaction();
 		// loop until insert all data
 		while (1) {
 			// get data
@@ -549,7 +571,7 @@ EOT;
 			$this->save($result);
 		}
 
-		// $this->db->rollback();
+		$this->db->rollback();
 		echo "Done";
     }
 }
